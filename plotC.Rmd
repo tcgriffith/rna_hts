@@ -1,0 +1,49 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+data <- read.table("./CPEB_RA0.6_DCA.txt",header=FALSE,sep=" ")
+
+
+data
+```
+
+```{r}
+library(dplyr)
+
+row.names(data) <- 1:81
+colnames(data) <- 1:81
+
+```
+
+```{r}
+library(tidyr)
+data3 <- data %>% 
+  mutate(idx=row.names(data)) %>%
+  gather(key=idy,value=value,1:81)
+
+data4 <-
+   data3 %>%
+  mutate(idx2=as.numeric(gsub("aa","",idx)),idy2=as.numeric(gsub("aa","",idy)))
+
+```
+
+```{r}
+
+library(ggplot2)
+library(scales)
+
+p <- ggplot(data4, aes(idx2, idy2)) + 
+  geom_tile(aes(fill = value),colour = "white") +
+  scale_fill_gradient2(low=muted("blue"),high=muted("red"))
+
+print(p)
+```
+
+
