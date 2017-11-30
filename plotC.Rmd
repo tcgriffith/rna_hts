@@ -46,4 +46,10 @@ p <- ggplot(data4, aes(idx2, idy2)) +
 print(p)
 ```
 
+```{r}
+png("p.png")
+print(p)
+
+dev.off()
+```
 
