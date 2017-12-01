@@ -53,3 +53,47 @@ print(p)
 dev.off()
 ```
 
+
+
+## half half 
+
+```{r}
+library(data.table)
+data.theor <- fread("./theoretical.tsv",header=F)
+
+data.theor.dat <- data.theor %>%
+  mutate(idx=V1,idy=V2, value=max(data3$value)) %>%
+  select(idx,idy,value)
+
+data.dat <- data3 %>%
+  mutate(idx =as.numeric(idx),idy=as.numeric(idy)) %>%
+  filter(idx > idy)
+
+
+
+data.all <- rbind(data.theor.dat,data.dat)
+
+```
+
+```{r}
+library(ggplot2)
+library(scales)
+
+p2 <- ggplot(data.all, aes(idx, idy)) + 
+  geom_tile(aes(fill = value)) +
+  scale_fill_gradient2(low=muted("blue"),high=muted("red"),name = "")+
+  theme_minimal()+
+  xlab("Sequence Index")+
+  ylab("Sequence Index")+
+  
+  
+  coord_fixed(ratio=1)
+
+print(p2)
+```
+
+
+```{r}
+ggsave(plot=p2,file="a.png",dpi=900,width = 4,height = 4)
+```
+
