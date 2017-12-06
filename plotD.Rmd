@@ -1,0 +1,111 @@
+---
+title: "Untitled"
+author: "tc"
+date: "2017年12月6日"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyr)
+library(dplyr)
+
+library(ggplot2)
+library(scales)
+library(data.table)
+
+
+
+```
+
+```{r}
+data <- read.table("./Line1-RA0.6-DCA.txt",header=FALSE,sep=" ")
+
+row.names(data) <- 1:dim(data)[1]
+colnames(data) <- 1:dim(data)[2]
+
+data
+```
+
+
+
+```{r}
+
+data3 <- data %>% 
+  mutate(idx=row.names(data)) %>%
+  gather(key=idy,value=value,1:dim(data)[1])
+
+data4 <-
+   data3 %>%
+  mutate(idx2=as.numeric(gsub("aa","",idx)),idy2=as.numeric(gsub("aa","",idy)))
+
+```
+
+```{r}
+
+
+p <- ggplot(data4, aes(idx2, idy2)) + 
+  geom_tile(aes(fill = value),colour = "white") +
+  scale_fill_gradient2(low=muted("blue"),high=muted("red"))
+
+print(p)
+```
+
+```{r eval=FALSE}
+png("p.png")
+print(p)
+
+dev.off()
+```
+
+
+
+## half half 
+
+```{r}
+
+#data.theor <- fread("./theoretical.tsv",header=F)
+
+# data.theor.dat <- data.theor %>%
+#   mutate(idx=V1,idy=V2, value=max(data3$value)) %>%
+#   select(idx,idy,value)
+
+data.dat <- data3 %>%
+  mutate(idx =as.numeric(idx),idy=as.numeric(idy)) %>%
+  filter(idx > idy)
+
+
+
+#data.all <- rbind(data.theor.dat,data.dat)
+
+```
+
+```{r}
+
+cutoff = 0.045
+
+data.dat.filtered <- 
+  data.dat %>%
+  filter(value > cutoff)
+
+p2 <- ggplot(data.dat.filtered, aes(idx, idy)) + 
+  geom_tile(aes(fill = value)) +
+  geom_abline(alpha=0.2) +
+  scale_fill_gradient2(low=muted("blue"),high=muted("red"),name = "")+
+  theme_minimal()+
+  xlab("Sequence Index")+
+  ylab("Sequence Index")+
+  
+  
+  coord_fixed(ratio=1)
+
+print(p2)
+```
+
+
+```{r}
+ggsave(plot=p2,file="a.png",dpi=900,width = 4,height = 4)
+```
+
